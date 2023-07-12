@@ -1,10 +1,10 @@
 package ru.practicum.shareit.item.mapper;
 
-import org.springframework.stereotype.Component;
+import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
-@Component
+@UtilityClass
 public class ItemMapper {
     public Item mapToItem(ItemDto itemDto) {
         return new Item(itemDto.getId(),

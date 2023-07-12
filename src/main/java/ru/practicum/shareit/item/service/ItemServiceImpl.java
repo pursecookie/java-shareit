@@ -17,14 +17,11 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
     private final ItemStorage itemStorage;
     private final UserStorage userStorage;
-    private final ItemMapper itemMapper;
 
     @Autowired
-    public ItemServiceImpl(ItemStorage itemStorage, UserStorage userStorage,
-                           ItemMapper itemMapper) {
+    public ItemServiceImpl(ItemStorage itemStorage, UserStorage userStorage) {
         this.itemStorage = itemStorage;
         this.userStorage = userStorage;
-        this.itemMapper = itemMapper;
     }
 
     @Override
@@ -33,11 +30,11 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("Пользователь с id " + ownerId + " не найден");
         }
 
-        Item item = itemMapper.mapToItem(itemDto);
+        Item item = ItemMapper.mapToItem(itemDto);
 
-        item.setOwnerId(ownerId);
+        item.setOwner(userStorage.read(ownerId));
 
-        return itemMapper.mapToItemDto(itemStorage.create(item));
+        return ItemMapper.mapToItemDto(itemStorage.create(item));
     }
 
     @Override
@@ -46,13 +43,13 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("Вещь с id " + id + " не найдена");
         }
 
-        return itemMapper.mapToItemDto(itemStorage.read(id));
+        return ItemMapper.mapToItemDto(itemStorage.read(id));
     }
 
     @Override
     public Collection<ItemDto> readAll(long ownerId) {
         return itemStorage.readAll(ownerId).stream()
-                .map(itemMapper::mapToItemDto)
+                .map(ItemMapper::mapToItemDto)
                 .collect(Collectors.toList());
     }
 
@@ -62,22 +59,22 @@ public class ItemServiceImpl implements ItemService {
             throw new NotFoundException("Вещь с id " + id + " не найдена");
         }
 
-        if (itemStorage.read(id).getOwnerId() != ownerId) {
+        if (itemStorage.read(id).getOwner().getId() != ownerId) {
             throw new AccessDeniedException("Нет прав для редактирования вещи");
         }
 
-        Item item = itemMapper.mapToItem(itemDto);
+        Item item = ItemMapper.mapToItem(itemDto);
 
         item.setId(id);
-        item.setOwnerId(ownerId);
+        item.setOwner(userStorage.read(ownerId));
 
-        return itemMapper.mapToItemDto(itemStorage.update(item));
+        return ItemMapper.mapToItemDto(itemStorage.update(item));
     }
 
     @Override
     public Collection<ItemDto> search(String text) {
         return itemStorage.search(text).stream()
-                .map(itemMapper::mapToItemDto)
+                .map(ItemMapper::mapToItemDto)
                 .collect(Collectors.toList());
     }
 }

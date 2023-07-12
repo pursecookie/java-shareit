@@ -14,19 +14,17 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
-    private final UserMapper userMapper;
 
     @Autowired
-    public UserServiceImpl(UserStorage userStorage, UserMapper userMapper) {
+    public UserServiceImpl(UserStorage userStorage) {
         this.userStorage = userStorage;
-        this.userMapper = userMapper;
     }
 
     @Override
     public UserDto create(UserDto userDto) {
-        User user = userMapper.mapToUser(userDto);
+        User user = UserMapper.mapToUser(userDto);
 
-        return userMapper.mapToUserDto(userStorage.create(user));
+        return UserMapper.mapToUserDto(userStorage.create(user));
     }
 
     @Override
@@ -35,13 +33,13 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException("Данные с id " + id + " не найдены");
         }
 
-        return userMapper.mapToUserDto(userStorage.read(id));
+        return UserMapper.mapToUserDto(userStorage.read(id));
     }
 
     @Override
     public Collection<UserDto> readAll() {
         return userStorage.readAll().stream()
-                .map(userMapper::mapToUserDto)
+                .map(UserMapper::mapToUserDto)
                 .collect(Collectors.toList());
     }
 
@@ -51,11 +49,11 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundException("Данные с id " + id + " не найдены");
         }
 
-        User user = userMapper.mapToUser(userDto);
+        User user = UserMapper.mapToUser(userDto);
 
         user.setId(id);
 
-        return userMapper.mapToUserDto(userStorage.update(user));
+        return UserMapper.mapToUserDto(userStorage.update(user));
     }
 
     @Override

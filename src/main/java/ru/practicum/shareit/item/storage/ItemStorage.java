@@ -27,7 +27,7 @@ public class ItemStorage {
 
     public Collection<Item> readAll(long ownerId) {
         return itemStorage.values().stream()
-                .filter(item -> item.getOwnerId() == ownerId)
+                .filter(item -> item.getOwner().getId() == ownerId)
                 .collect(Collectors.toList());
     }
 

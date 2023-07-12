@@ -33,4 +33,10 @@ public class ErrorHandlingControllerAdvice {
     public Violation handleAccessDeniedException(AccessDeniedException e) {
         return new Violation("403", e.getMessage());
     }
+
+    @ExceptionHandler(Throwable.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Violation handleAnyException(Throwable e) {
+        return new Violation("500", e.getMessage());
+    }
 }
