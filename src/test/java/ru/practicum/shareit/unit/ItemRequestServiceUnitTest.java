@@ -26,11 +26,8 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -65,9 +62,7 @@ public class ItemRequestServiceUnitTest {
         itemRequestDtoInput2 = new ItemRequestDtoInput(2, "something with description");
         itemRequest2 = ItemRequestMapper.mapToItemRequest(itemRequestDtoInput2, user2, LocalDateTime.now());
 
-        requests = Stream.of(itemRequest1, itemRequest2)
-                .sorted(Comparator.comparing(ItemRequest::getCreated).reversed())
-                .collect(Collectors.toList());
+        requests = List.of(itemRequest1, itemRequest2);
 
         pageable = PageRequest.of(0, 10);
     }
