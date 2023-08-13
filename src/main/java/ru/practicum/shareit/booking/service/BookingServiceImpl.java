@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDtoInput;
 import ru.practicum.shareit.booking.dto.BookingDtoOutput;
@@ -15,6 +16,7 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
@@ -28,6 +30,7 @@ public class BookingServiceImpl implements BookingService {
     private final ItemRepository itemRepository;
 
     @Override
+    @Transactional
     public BookingDtoOutput create(long bookerId, BookingDtoInput bookingDtoInput) {
         User booker = userRepository.findById(bookerId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id " + bookerId + " не найден"));
@@ -50,7 +53,11 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDtoOutput read(long userId, long id) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + userId + " не найден"));
+
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Бронирование с id " + id + " не найдено"));
 
@@ -65,40 +72,49 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<BookingDtoOutput> readAllBookerBookings(long bookerId, String state) {
+    @Transactional
+    public Collection<BookingDtoOutput> readAllBookerBookings(long bookerId, String state, Pageable pageable) {
         userRepository.findById(bookerId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id " + bookerId + " не найден"));
 
         switch (state) {
             case "CURRENT":
-                return bookingRepository.readAllBookerCurrentBookings(bookerId, LocalDateTime.now())
+                return bookingRepository.readAllBookerCurrentBookings(pageable, bookerId, LocalDateTime.now())
+                        .getContent()
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
             case "PAST":
-                return bookingRepository.readAllBookerPastBookings(bookerId, LocalDateTime.now())
+                return bookingRepository.readAllBookerPastBookings(pageable, bookerId, LocalDateTime.now())
+                        .getContent()
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
             case "FUTURE":
-                return bookingRepository.readAllBookerFutureBookings(bookerId, LocalDateTime.now())
+                return bookingRepository.readAllBookerFutureBookings(pageable, bookerId, LocalDateTime.now())
+                        .getContent()
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
             case "WAITING":
                 return bookingRepository
-                        .findAllByBooker_IdAndStatusInOrderByStartDesc(bookerId, List.of(BookingApproval.WAITING))
+                        .findAllByBooker_IdAndStatusInOrderByStartDesc(pageable, bookerId,
+                                List.of(BookingApproval.WAITING))
+                        .getContent()
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
             case "REJECTED":
                 return bookingRepository
-                        .findAllByBooker_IdAndStatusInOrderByStartDesc(bookerId, List.of(BookingApproval.REJECTED))
+                        .findAllByBooker_IdAndStatusInOrderByStartDesc(pageable, bookerId,
+                                List.of(BookingApproval.REJECTED))
+                        .getContent()
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
             default:
-                return bookingRepository.findAllByBooker_IdOrderByStartDesc(bookerId)
+                return bookingRepository.findAllByBooker_IdOrderByStartDesc(pageable, bookerId)
+                        .getContent()
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
@@ -106,7 +122,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<BookingDtoOutput> readAllOwnerItemBookings(long ownerId, String state) {
+    @Transactional
+    public Collection<BookingDtoOutput> readAllOwnerItemBookings(long ownerId, String state, Pageable pageable) {
         userRepository.findById(ownerId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id " + ownerId + " не найден"));
 
@@ -117,34 +134,42 @@ public class BookingServiceImpl implements BookingService {
 
         switch (state) {
             case "CURRENT":
-                return bookingRepository.readAllOwnerItemsCurrentBookings(userItems, LocalDateTime.now())
+                return bookingRepository.readAllOwnerItemsCurrentBookings(pageable, userItems, LocalDateTime.now())
+                        .getContent()
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
             case "PAST":
-                return bookingRepository.readAllOwnerItemsPastBookings(userItems, LocalDateTime.now())
+                return bookingRepository.readAllOwnerItemsPastBookings(pageable, userItems, LocalDateTime.now())
+                        .getContent()
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
             case "FUTURE":
-                return bookingRepository.readAllOwnerItemsFutureBookings(userItems, LocalDateTime.now())
+                return bookingRepository.readAllOwnerItemsFutureBookings(pageable, userItems, LocalDateTime.now())
+                        .getContent()
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
             case "WAITING":
                 return bookingRepository
-                        .findAllByItem_IdInAndStatusInOrderByStartDesc(userItems, List.of(BookingApproval.WAITING))
+                        .findAllByItem_IdInAndStatusInOrderByStartDesc(pageable, userItems,
+                                List.of(BookingApproval.WAITING))
+                        .getContent()
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
             case "REJECTED":
                 return bookingRepository
-                        .findAllByItem_IdInAndStatusInOrderByStartDesc(userItems, List.of(BookingApproval.REJECTED))
+                        .findAllByItem_IdInAndStatusInOrderByStartDesc(pageable, userItems,
+                                List.of(BookingApproval.REJECTED))
+                        .getContent()
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
             default:
-                return bookingRepository.findAllByItem_IdInOrderByStartDesc(userItems)
+                return bookingRepository.findAllByItem_IdInOrderByStartDesc(pageable, userItems)
+                        .getContent()
                         .stream()
                         .map(BookingMapper::mapToBookingDtoOutput)
                         .collect(Collectors.toList());
@@ -152,7 +177,11 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingDtoOutput updateApproval(long ownerId, long id, Boolean isApproved) {
+        userRepository.findById(ownerId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id " + ownerId + " не найден"));
+
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Бронирование с id " + id + " не найдено"));
 

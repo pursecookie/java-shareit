@@ -7,7 +7,8 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDateTime;
 
-public class EndAndStartOfBookingValidator implements ConstraintValidator<EndAndStartOfBookingValidation, BookingDtoInput> {
+public class EndAndStartOfBookingValidator implements ConstraintValidator<EndAndStartOfBookingValidation,
+        BookingDtoInput> {
 
     @Override
     public boolean isValid(BookingDtoInput bookingDtoInput, ConstraintValidatorContext constraintValidatorContext) {

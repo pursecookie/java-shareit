@@ -1,12 +1,15 @@
 package ru.practicum.shareit.item.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.Collection;
 
 @RestController
@@ -16,31 +19,42 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ItemDto create(@RequestHeader("X-Sharer-User-Id") long ownerId,
-                          @Valid @RequestBody ItemDto itemDto) {
-        return itemService.create(ownerId, itemDto);
+    public ItemDtoWithRequestId create(@RequestHeader("X-Sharer-User-Id") long ownerId,
+                                       @Valid @RequestBody ItemDtoInput itemDtoInput) {
+        return itemService.create(ownerId, itemDtoInput);
     }
 
     @GetMapping("/{id}")
-    public ItemDto read(@RequestHeader("X-Sharer-User-Id") long userId,
-                        @PathVariable long id) {
+    public ItemDtoWithComments read(@RequestHeader("X-Sharer-User-Id") long userId,
+                                    @PathVariable long id) {
         return itemService.read(userId, id);
     }
 
     @GetMapping
-    public Collection<ItemDto> readAll(@RequestHeader("X-Sharer-User-Id") long ownerId) {
-        return itemService.readAll(ownerId);
+    public Collection<ItemDtoWithComments> readAll(@RequestHeader("X-Sharer-User-Id") long ownerId,
+                                                   @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                                   @RequestParam(defaultValue = "10") @Min(1) @Max(200) Integer size) {
+
+        Pageable pageable = PageRequest.of(from / size, size);
+
+        return itemService.readAll(ownerId, pageable);
     }
 
     @PatchMapping("/{id}")
-    public ItemDto update(@RequestHeader("X-Sharer-User-Id") long ownerId,
-                          @RequestBody ItemDto itemDto, @PathVariable long id) {
-        return itemService.update(ownerId, itemDto, id);
+    public ItemDtoWithRequestId update(@RequestHeader("X-Sharer-User-Id") long ownerId,
+                                       @RequestBody ItemDtoInput itemDtoInput, @PathVariable long id) {
+        return itemService.update(ownerId, itemDtoInput, id);
     }
 
     @GetMapping("/search")
-    public Collection<ItemDto> search(@RequestParam String text) {
-        return itemService.search(text);
+    public Collection<ItemDtoOutput> search(@RequestParam String text,
+                                            @RequestParam(value = "from",
+                                                    defaultValue = "0") @Min(0) Integer from,
+                                            @RequestParam(value = "size", defaultValue = "10")
+                                            @Min(1) @Max(200) Integer size) {
+        Pageable pageable = PageRequest.of(from / size, size);
+
+        return itemService.search(text, pageable);
     }
 
     @PostMapping("/{itemId}/comment")
