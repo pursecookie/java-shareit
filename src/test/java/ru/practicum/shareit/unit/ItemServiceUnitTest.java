@@ -56,14 +56,20 @@ public class ItemServiceUnitTest {
     private CommentRepository commentRepository;
     @InjectMocks
     private ItemServiceImpl itemService;
-    UserDto userDto1, userDto2;
-    User user1, user2;
-    ItemDtoInput itemDtoInput1, itemDtoInput2, updatedItemDtoInput;
-    Item item1, item2;
+    UserDto userDto1;
+    UserDto userDto2;
+    User user1;
+    User user2;
+    ItemDtoInput itemDtoInput1;
+    ItemDtoInput itemDtoInput2;
+    ItemDtoInput updatedItemDtoInput;
+    Item item1;
+    Item item2;
     Page<Item> items;
     ItemRequest itemRequest;
     ItemRequestDtoInput itemRequestDtoInput;
-    BookingDtoInput lastBooking, nextBooking;
+    BookingDtoInput lastBooking;
+    BookingDtoInput nextBooking;
     List<Booking> bookings;
     Pageable pageable;
     CommentDto commentDto;

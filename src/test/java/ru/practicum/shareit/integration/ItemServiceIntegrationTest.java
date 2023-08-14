@@ -42,11 +42,17 @@ class ItemServiceIntegrationTest {
     private BookingService bookingService;
     @Autowired
     private ItemRequestService itemRequestService;
-    UserDto userDto1, userDto2;
-    ItemDtoInput itemDtoInput1, itemDtoInput2;
-    ItemDtoInput updatedItemDtoInput, itemDtoInputWithoutName, itemDtoInputWithoutDescription,
-            itemDtoInputWithoutAvailable, itemDtoInputNothingToUpdate;
-    BookingDtoInput lastBooking, nextBooking;
+    UserDto userDto1;
+    UserDto userDto2;
+    ItemDtoInput itemDtoInput1;
+    ItemDtoInput itemDtoInput2;
+    ItemDtoInput updatedItemDtoInput;
+    ItemDtoInput itemDtoInputWithoutName;
+    ItemDtoInput itemDtoInputWithoutDescription;
+    ItemDtoInput itemDtoInputWithoutAvailable;
+    ItemDtoInput itemDtoInputNothingToUpdate;
+    BookingDtoInput lastBooking;
+    BookingDtoInput nextBooking;
     Pageable pageable;
     CommentDto commentDto;
 

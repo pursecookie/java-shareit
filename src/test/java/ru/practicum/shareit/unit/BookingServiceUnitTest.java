@@ -44,12 +44,20 @@ public class BookingServiceUnitTest {
     private ItemRepository itemRepository;
     @InjectMocks
     private BookingServiceImpl bookingService;
-    User user1, user2;
-    UserDto userDto1, userDto2;
-    Item item1, item2;
-    ItemDtoInput itemDtoInput1, itemDtoInput2;
-    Booking booking1, booking2, booking3;
-    BookingDtoInput currentBooking, pastBooking, futureBooking;
+    User user1;
+    User user2;
+    UserDto userDto1;
+    UserDto userDto2;
+    Item item1;
+    Item item2;
+    ItemDtoInput itemDtoInput1;
+    ItemDtoInput itemDtoInput2;
+    Booking booking1;
+    Booking booking2;
+    Booking booking3;
+    BookingDtoInput currentBooking;
+    BookingDtoInput pastBooking;
+    BookingDtoInput futureBooking;
     Pageable pageable;
 
     @BeforeEach

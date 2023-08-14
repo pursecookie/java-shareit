@@ -41,10 +41,14 @@ public class ItemRequestServiceUnitTest {
     private ItemRepository itemRepository;
     @InjectMocks
     private ItemRequestServiceImpl itemRequestService;
-    UserDto userDto1, userDto2;
-    User user1, user2;
-    ItemRequestDtoInput itemRequestDtoInput1, itemRequestDtoInput2;
-    ItemRequest itemRequest1, itemRequest2;
+    UserDto userDto1;
+    UserDto userDto2;
+    User user1;
+    User user2;
+    ItemRequestDtoInput itemRequestDtoInput1;
+    ItemRequestDtoInput itemRequestDtoInput2;
+    ItemRequest itemRequest1;
+    ItemRequest itemRequest2;
     List<ItemRequest> requests;
     Pageable pageable;
 
@@ -100,8 +104,6 @@ public class ItemRequestServiceUnitTest {
         Mockito.when(userRepository.findById(2L)).thenReturn(Optional.of(user2));
         Mockito.when(itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(2))
                 .thenReturn(requests);
-        Mockito.when(itemRepository.findAllByItemRequestId(Mockito.anyLong()))
-                .thenReturn(new ArrayList<>());
 
         List<ItemRequestDtoOutput> requestorRequests = new ArrayList<>(itemRequestService
                 .readAllRequestorRequests(2));
@@ -140,8 +142,6 @@ public class ItemRequestServiceUnitTest {
         Mockito.when(userRepository.findById(1L)).thenReturn(Optional.of(user1));
         Mockito.when(itemRequestRepository.findAllByRequestorIdNotOrderByCreatedDesc(1, pageable))
                 .thenReturn(new PageImpl<>(requests));
-        Mockito.when(itemRepository.findAllByItemRequestId(Mockito.anyLong()))
-                .thenReturn(new ArrayList<>());
 
         List<ItemRequestDtoOutput> otherUsersRequests = new ArrayList<>(itemRequestService
                 .readAllOtherUsersRequests(1, pageable));

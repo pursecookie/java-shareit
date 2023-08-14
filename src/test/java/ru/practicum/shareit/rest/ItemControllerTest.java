@@ -38,10 +38,13 @@ public class ItemControllerTest {
     @MockBean
     private ItemService itemService;
     User owner;
-    Item item, updatedItem;
-    ItemDtoInput itemDtoInput, updatedItemInput;
+    Item item;
+    Item updatedItem;
+    ItemDtoInput itemDtoInput;
+    ItemDtoInput updatedItemInput;
     ItemDtoWithRequestId itemDtoWithRequestId;
-    ItemDtoWithComments itemDtoWithComments1, itemDtoWithComments2;
+    ItemDtoWithComments itemDtoWithComments1;
+    ItemDtoWithComments itemDtoWithComments2;
     ItemDtoOutput itemDtoOutput;
     Pageable pageable;
     CommentDto commentDto;

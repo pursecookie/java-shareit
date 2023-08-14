@@ -29,7 +29,8 @@ public class BookingRepositoryTest {
     private ItemRepository itemRepository;
     @Autowired
     private BookingRepository bookingRepository;
-    User owner, booker;
+    User owner;
+    User booker;
     Item item;
     Booking booking;
     Pageable pageable;

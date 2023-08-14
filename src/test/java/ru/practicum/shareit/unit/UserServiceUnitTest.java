@@ -25,7 +25,8 @@ class UserServiceUnitTest {
     private UserRepository userRepository;
     @InjectMocks
     private UserServiceImpl userService;
-    UserDto userDto, allUpdatedUserDto;
+    UserDto userDto;
+    UserDto allUpdatedUserDto;
     User user;
 
     @BeforeEach

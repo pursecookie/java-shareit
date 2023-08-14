@@ -41,7 +41,8 @@ public class ItemRequestControllerTest {
     ItemRequestDtoInput itemRequestDtoInput;
     ItemRequest itemRequest;
     ItemRequestDtoOutput itemRequestDtoOutput;
-    User requestor, user;
+    User requestor;
+    User user;
     Pageable pageable;
 
     @BeforeEach

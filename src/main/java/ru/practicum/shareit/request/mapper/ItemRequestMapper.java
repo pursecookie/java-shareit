@@ -8,6 +8,7 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @UtilityClass
@@ -21,6 +22,10 @@ public class ItemRequestMapper {
     }
 
     public ItemRequestDtoOutput mapToItemRequestDtoOutput(ItemRequest itemRequest, List<ItemDtoWithRequestId> items) {
+        if (items == null) {
+            items = new ArrayList<>();
+        }
+
         return new ItemRequestDtoOutput(itemRequest.getId(),
                 itemRequest.getDescription(),
                 itemRequest.getCreated(),

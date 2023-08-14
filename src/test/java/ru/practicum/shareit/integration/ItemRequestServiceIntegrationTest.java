@@ -28,8 +28,10 @@ public class ItemRequestServiceIntegrationTest {
     private ItemRequestService itemRequestService;
     @Autowired
     private UserService userService;
-    UserDto userDto1, userDto2;
-    ItemRequestDtoInput itemRequestDtoInput1, itemRequestDtoInput2;
+    UserDto userDto1;
+    UserDto userDto2;
+    ItemRequestDtoInput itemRequestDtoInput1;
+    ItemRequestDtoInput itemRequestDtoInput2;
     Pageable pageable;
 
     @BeforeEach
@@ -68,6 +70,7 @@ public class ItemRequestServiceIntegrationTest {
     @Test
     void readAllRequestorRequests_whenAllIsOk_thenReturnedRequests() {
         UserDto savedRequestor = userService.create(userDto2);
+
         ItemRequestDtoOutput savedRequest1 = itemRequestService.create(savedRequestor.getId(), itemRequestDtoInput1);
         ItemRequestDtoOutput savedRequest2 = itemRequestService.create(savedRequestor.getId(), itemRequestDtoInput2);
 

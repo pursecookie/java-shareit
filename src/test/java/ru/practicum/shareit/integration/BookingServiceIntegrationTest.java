@@ -35,9 +35,13 @@ public class BookingServiceIntegrationTest {
     private ItemService itemService;
     @Autowired
     private UserService userService;
-    UserDto userDto1, userDto2;
-    ItemDtoInput itemDtoInput1, itemDtoInput2;
-    BookingDtoInput currentBooking, pastBooking, futureBooking;
+    UserDto userDto1;
+    UserDto userDto2;
+    ItemDtoInput itemDtoInput1;
+    ItemDtoInput itemDtoInput2;
+    BookingDtoInput currentBooking;
+    BookingDtoInput pastBooking;
+    BookingDtoInput futureBooking;
     Pageable pageable;
 
     @BeforeEach

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.dto.ItemDtoWithRequestId;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDtoInput;
@@ -16,7 +17,11 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Map;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -33,11 +38,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         ItemRequest itemRequest = ItemRequestMapper
                 .mapToItemRequest(itemRequestDtoInput, requestor, LocalDateTime.now());
 
-        return ItemRequestMapper.mapToItemRequestDtoOutput(itemRequestRepository.save(itemRequest),
-                itemRepository.findAllByItemRequestId(itemRequest.getId())
-                        .stream()
-                        .map(item -> ItemMapper.mapToItemDtoWithRequestId(item, itemRequest.getId()))
-                        .collect(Collectors.toList()));
+        List<ItemDtoWithRequestId> items = itemRepository.findAllByItemRequestId(itemRequest.getId())
+                .stream()
+                .map(item -> ItemMapper.mapToItemDtoWithRequestId(item, itemRequest.getId()))
+                .collect(toList());
+
+        return ItemRequestMapper.mapToItemRequestDtoOutput(itemRequestRepository.save(itemRequest), items);
     }
 
     @Override
@@ -45,13 +51,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         userRepository.findById(requestorId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id " + requestorId + " не найден"));
 
-        return itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(requestorId).stream()
+        List<ItemRequest> requests = itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(requestorId);
+
+        return requests
+                .stream()
                 .map(itemRequest -> ItemRequestMapper.mapToItemRequestDtoOutput(itemRequest,
-                        itemRepository.findAllByItemRequestId(itemRequest.getId())
-                                .stream()
-                                .map(item -> ItemMapper.mapToItemDtoWithRequestId(item, itemRequest.getId()))
-                                .collect(Collectors.toList())))
-                .collect(Collectors.toList());
+                        findItemsByRequest(requests).get(itemRequest.getId())))
+                .collect(toList());
     }
 
     @Override
@@ -59,13 +65,15 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id " + userId + " не найден"));
 
-        return itemRequestRepository.findAllByRequestorIdNotOrderByCreatedDesc(userId, pageable).stream()
+        List<ItemRequest> requests = itemRequestRepository
+                .findAllByRequestorIdNotOrderByCreatedDesc(userId, pageable)
+                .getContent();
+
+        return requests
+                .stream()
                 .map(itemRequest -> ItemRequestMapper.mapToItemRequestDtoOutput(itemRequest,
-                        itemRepository.findAllByItemRequestId(itemRequest.getId())
-                                .stream()
-                                .map(item -> ItemMapper.mapToItemDtoWithRequestId(item, itemRequest.getId()))
-                                .collect(Collectors.toList())))
-                .collect(Collectors.toList());
+                        findItemsByRequest(requests).get(itemRequest.getId())))
+                .collect(toList());
     }
 
     @Override
@@ -76,10 +84,22 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         ItemRequest itemRequest = itemRequestRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Запрос на вещь с id " + id + " не найден"));
 
-        return ItemRequestMapper.mapToItemRequestDtoOutput(itemRequestRepository.findByIdOrderByCreatedDesc(id),
-                itemRepository.findAllByItemRequestId(itemRequest.getId())
+        List<ItemDtoWithRequestId> items = itemRepository.findAllByItemRequestId(itemRequest.getId())
+                .stream()
+                .map(item -> ItemMapper.mapToItemDtoWithRequestId(item, itemRequest.getId()))
+                .collect(toList());
+
+        return ItemRequestMapper.mapToItemRequestDtoOutput(itemRequestRepository.findByIdOrderByCreatedDesc(id), items);
+    }
+
+    private Map<Long, List<ItemDtoWithRequestId>> findItemsByRequest(List<ItemRequest> requests) {
+        return itemRepository.findAllByItemRequestIdIn(requests
                         .stream()
-                        .map(item -> ItemMapper.mapToItemDtoWithRequestId(item, itemRequest.getId()))
-                        .collect(Collectors.toList()));
+                        .map(ItemRequest::getId)
+                        .collect(toList()))
+
+                .stream()
+                .map(item -> ItemMapper.mapToItemDtoWithRequestId(item, item.getItemRequest().getId()))
+                .collect(groupingBy(ItemDtoWithRequestId::getRequestId, toList()));
     }
 }

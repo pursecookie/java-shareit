@@ -30,7 +30,9 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
 
-    UserDto userDto1, userDto2, updatedUserDto;
+    UserDto userDto1;
+    UserDto userDto2;
+    UserDto updatedUserDto;
 
     @BeforeEach
     void setUp() {
