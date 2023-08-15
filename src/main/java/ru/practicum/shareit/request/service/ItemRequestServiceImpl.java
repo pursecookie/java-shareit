@@ -53,10 +53,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
         List<ItemRequest> requests = itemRequestRepository.findAllByRequestorIdOrderByCreatedDesc(requestorId);
 
+        Map<Long, List<ItemDtoWithRequestId>> items = findItemsByRequest(requests);
+
         return requests
                 .stream()
                 .map(itemRequest -> ItemRequestMapper.mapToItemRequestDtoOutput(itemRequest,
-                        findItemsByRequest(requests).get(itemRequest.getId())))
+                        items.get(itemRequest.getId())))
                 .collect(toList());
     }
 
@@ -69,10 +71,12 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .findAllByRequestorIdNotOrderByCreatedDesc(userId, pageable)
                 .getContent();
 
+        Map<Long, List<ItemDtoWithRequestId>> items = findItemsByRequest(requests);
+
         return requests
                 .stream()
                 .map(itemRequest -> ItemRequestMapper.mapToItemRequestDtoOutput(itemRequest,
-                        findItemsByRequest(requests).get(itemRequest.getId())))
+                        items.get(itemRequest.getId())))
                 .collect(toList());
     }
 
