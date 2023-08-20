@@ -23,7 +23,6 @@ import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -321,17 +320,6 @@ class ItemServiceIntegrationTest {
         assertEquals(savedItem.getName(), returnedItems.get(0).getName());
         assertEquals(savedItem.getDescription(), returnedItems.get(0).getDescription());
         assertEquals(savedItem.getAvailable(), returnedItems.get(0).getAvailable());
-    }
-
-    @Test
-    void search_whenTextIsEmpty_thenReturnedEmptyCollection() {
-        UserDto savedOwner = userService.create(userDto1);
-
-        itemService.create(savedOwner.getId(), itemDtoInput1);
-
-        Collection<ItemDtoOutput> returnedItems = itemService.search("", pageable);
-
-        assertEquals(0, returnedItems.size());
     }
 
     @Test

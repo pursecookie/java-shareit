@@ -25,7 +25,6 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -118,10 +117,6 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Collection<ItemDtoOutput> search(String text, Pageable pageable) {
-        if (text.isBlank()) {
-            return new ArrayList<>();
-        }
-
         return itemRepository.search(text, pageable)
                 .getContent()
                 .stream()

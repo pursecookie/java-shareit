@@ -394,13 +394,6 @@ public class ItemServiceUnitTest {
     }
 
     @Test
-    void search_whenTextIsEmpty_thenReturnedEmptyCollection() {
-        List<ItemDtoOutput> returnedItems = new ArrayList<>(itemService.search(" ", pageable));
-
-        assertEquals(0, returnedItems.size());
-    }
-
-    @Test
     void createComment_whenAllIsOk_thenReturnedComment() {
         Mockito.when(userRepository.findById(2L)).thenReturn(Optional.of(user2));
         Mockito.when(itemRepository.findById(1L)).thenReturn(Optional.of(item1));

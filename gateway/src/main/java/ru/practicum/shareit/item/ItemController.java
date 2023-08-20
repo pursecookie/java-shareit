@@ -1,12 +1,14 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import java.util.ArrayList;
 
 @RestController
 @RequiredArgsConstructor
@@ -47,6 +49,9 @@ public class ItemController {
                                                  defaultValue = "0") @Min(0) Integer from,
                                          @RequestParam(value = "size", defaultValue = "10")
                                          @Min(1) @Max(200) Integer size) {
+        if (text.isBlank()) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        }
 
         return itemClient.search(ownerId, text, from, size);
     }
